@@ -12,7 +12,9 @@ If you don't want Gunbot or a symlink to it in /opt/gunbot you'll need to edit t
 
 To get started, as root:
 
-cd /opt/gunbot; sudo apt-get install git; git clone https://github.com/peniscoin/GunBotScripts; sudo apt-get install nodejs; sudo apt-get install npm; sudo npm install -g pm2
+```
+cd /opt/gunbot; sudo apt-get install git; git clone https://github.com/peniscoin/GunBotScripts; mv GunBotScripts/scripts .; rm -rf GunBotScripts;sudo apt-get install nodejs; sudo apt-get install npm; sudo npm install -g pm2
+```
 
 ## Configuration
 
