@@ -1,0 +1,162 @@
+#!/bin/bash
+
+GUNBOTROOT=/opt/gunbot
+
+PAIRSTARTDELAY=10
+
+YAML=$GUNBOTROOT/allpairs.yaml
+
+GLOBALSTARTSCRIPT=start-all-pairs
+GLOBALSTOPSCRIPT=stop-all-pairs
+GLOBALCLEARPM2SCRIPT=clear-all-pm2
+
+POLONIEXSTARTSCRIPT=start-poloniex-pairs
+POLONIEXSTOPSCRIPT=stop-poloniex-pairs
+POLONIEXCLEARPM2SCRIPT=clear-poloniex-pm2
+
+BITTREXSTARTSCRIPT=start-bittrex-pairs
+BITTREXSTOPSCRIPT=stop-bittrex-pairs
+BITTREXCLEARPM2SCRIPT=clear-bittrex-pm2
+
+KRAKENSTARTSCRIPT=start-kraken-pairs
+KRAKENSTOPSCRIPT=stop-kraken-pairs
+KRAKENCLEARPM2SCRIPT=clear-kraken-pm2
+
+if [ ! -d "$GUNBOTROOT/YAMLs" ]; then
+	mkdir $GUNBOTROOT/YAMLs
+fi
+
+rm -f $GUNBOTROOT/YAMLs/*
+
+cp $GUNBOTROOT/scripts/templates/ALLPAIRS-params.js $GUNBOTROOT
+
+cd $GUNBOTROOT/scripts/
+
+echo "apps:">$YAML
+
+echo "#!/bin/sh">$GLOBALSTOPSCRIPT
+echo "#!/bin/sh">$GLOBALSTARTSCRIPT
+echo "cd $GUNBOTROOT">>$GLOBALSTARTSCRIPT
+echo "#!/bin/sh">$GLOBALCLEARPM2SCRIPT
+
+echo "#!/bin/sh">$POLONIEXSTOPSCRIPT
+echo "#!/bin/sh">$POLONIEXSTARTSCRIPT
+echo "cd $GUNBOTROOT">>$POLONIEXSTARTSCRIPT
+echo "#!/bin/sh">$POLONIEXCLEARPM2SCRIPT
+
+echo "#!/bin/sh">$BITTREXSTOPSCRIPT
+echo "#!/bin/sh">$BITTREXSTARTSCRIPT
+echo "cd $GUNBOTROOT">>$BITTREXSTARTSCRIPT
+echo "#!/bin/sh">$BITTREXCLEARPM2SCRIPT
+
+echo "#!/bin/sh">$KRAKENSTOPSCRIPT
+echo "#!/bin/sh">$KRAKENSTARTSCRIPT
+echo "cd $GUNBOTROOT">>$KRAKENSTARTSCRIPT
+echo "#!/bin/sh">$KRAKENCLEARPM2SCRIPT
+
+# POLONIEX
+
+for pair in `cat $GUNBOTROOT/scripts/pairs/Poloniex-pairs.txt| tr "\n" " "`
+
+do
+    echo "  - script : $GUNBOTROOT/gunthy-linuxx64">>$YAML
+    echo "    name : 'Poloniex-$pair'">>$YAML
+    echo "    args : $pair poloniex">>$YAML
+
+    echo "apps:">$GUNBOTROOT/YAMLs/Poloniex-$pair.yaml
+    echo "  - script : $GUNBOTROOT/gunthy-linuxx64">>$GUNBOTROOT/YAMLs/Poloniex-$pair.yaml
+    echo "    name : 'Poloniex-$pair'">>$GUNBOTROOT/YAMLs/Poloniex-$pair.yaml
+    echo "    args : $pair poloniex">>$GUNBOTROOT/YAMLs/Poloniex-$pair.yaml
+
+    echo "pm2 start YAMLs/Poloniex-$pair.yaml">>$GLOBALSTARTSCRIPT
+    echo "sleep $PAIRSTARTDELAY">>$GLOBALSTARTSCRIPT
+    echo "pm2 start YAMLs/Poloniex-$pair.yaml">>$POLONIEXSTARTSCRIPT
+    echo "sleep $PAIRSTARTDELAY">>$POLONIEXSTARTSCRIPT
+
+    echo "pm2 stop Poloniex-$pair">>$GLOBALSTOPSCRIPT
+    echo "pm2 stop Poloniex-$pair">>$POLONIEXSTOPSCRIPT
+
+    echo "pm2 delete Poloniex-$pair">>$GLOBALCLEARPM2SCRIPT
+    echo "pm2 delete Poloniex-$pair">>$POLONIEXCLEARPM2SCRIPT
+
+    cp $GUNBOTROOT/scripts/templates/poloniex-config-template.js $GUNBOTROOT/poloniex-$pair-config.js
+done
+
+# BITTREX
+
+for pair in `cat $GUNBOTROOT/scripts/pairs/Bittrex-pairs.txt| tr "\n" " "`
+
+do
+    echo "  - script : $GUNBOTROOT/gunthy-linuxx64">>$YAML
+    echo "    name : 'Bittrex-$pair'">>$YAML
+    echo "    args : $pair bittrex">>$YAML
+
+    echo "apps:">$GUNBOTROOT/YAMLs/Bittrex-$pair.yaml
+    echo "  - script : $GUNBOTROOT/gunthy-linuxx64">>$GUNBOTROOT/YAMLs/Bittrex-$pair.yaml
+    echo "    name : 'Bittrex-$pair'">>$GUNBOTROOT/YAMLs/Bittrex-$pair.yaml
+    echo "    args : $pair bittrex">>$GUNBOTROOT/YAMLs/Bittrex-$pair.yaml
+
+    echo "pm2 start YAMLs/Bittrex-$pair.yaml">>$GLOBALSTARTSCRIPT
+    echo "sleep $PAIRSTARTDELAY">>$GLOBALSTARTSCRIPT
+    echo "pm2 start YAMLs/Bittrex-$pair.yaml">>$BITTREXSTARTSCRIPT
+    echo "sleep $PAIRSTARTDELAY">>$BITTREXSTARTSCRIPT
+
+    echo "pm2 stop Bittrex-$pair">>$GLOBALSTOPSCRIPT
+    echo "pm2 stop Bittrex-$pair">>$BITTREXSTOPSCRIPT
+
+    echo "pm2 delete Bittrex-$pair">>$GLOBALCLEARPM2SCRIPT
+    echo "pm2 delete Bittrex-$pair">>$BITTREXCLEARPM2SCRIPT
+
+    cp $GUNBOTROOT/scripts/templates/bittrex-config-template.js $GUNBOTROOT/bittrex-$pair-config.js
+done
+
+# Kraken
+
+for pair in `cat $GUNBOTROOT/scripts/pairs/Kraken-pairs.txt| tr "\n" " "`
+
+do
+    echo "  - script : $GUNBOTROOT/gunthy-linuxx64">>$YAML
+    echo "    name : 'Kraken-$pair'">>$YAML
+    echo "    args : $pair kraken">>$YAML
+
+    echo "apps:">$GUNBOTROOT/YAMLs/Kraken-$pair.yaml
+    echo "  - script : $GUNBOTROOT/gunthy-linuxx64">>$GUNBOTROOT/YAMLs/Kraken-$pair.yaml
+    echo "    name : 'Kraken-$pair'">>$GUNBOTROOT/YAMLs/Kraken-$pair.yaml
+    echo "    args : $pair kraken">>$GUNBOTROOT/YAMLs/Kraken-$pair.yaml
+
+    echo "pm2 start YAMLs/Kraken-$pair.yaml">>$GLOBALSTARTSCRIPT
+    echo "sleep $PAIRSTARTDELAY">>$GLOBALSTARTSCRIPT
+    echo "pm2 start YAMLs/Kraken-$pair.yaml">>$KRAKENSTARTSCRIPT
+    echo "sleep $PAIRSTARTDELAY">>$KRAKENSTARTSCRIPT
+
+    echo "pm2 stop Kraken-$pair">>$GLOBALSTOPSCRIPT
+    echo "pm2 stop Kraken-$pair">>$KRAKENSTOPSCRIPT
+
+    echo "pm2 delete Kraken-$pair">>$GLOBALCLEARPM2SCRIPT
+    echo "pm2 delete Kraken-$pair">>$KRAKENCLEARPM2SCRIPT
+
+    cp $GUNBOTROOT/scripts/templates/kraken-config-template.js $GUNBOTROOT/kraken-$pair-config.js
+done
+
+echo "pm2 save">>$GLOBALSTARTSCRIPT
+echo "pm2 save">>$POLONIEXSTARTSCRIPT
+echo "pm2 save">>$BITTREXSTARTSCRIPT
+echo "pm2 save">>$KRAKENSTARTSCRIPT
+
+chmod +x $GLOBALSTARTSCRIPT
+chmod +x $GLOBALSTOPSCRIPT
+chmod +x $GLOBALCLEARPM2SCRIPT
+
+chmod +x $POLONIEXSTARTSCRIPT
+chmod +x $POLONIEXSTOPSCRIPT
+chmod +x $POLONIEXCLEARPM2SCRIPT
+
+chmod +x $BITTREXSTARTSCRIPT
+chmod +x $BITTREXSTOPSCRIPT
+chmod +x $BITTREXCLEARPM2SCRIPT
+
+chmod +x $KRAKENSTARTSCRIPT
+chmod +x $KRAKENSTOPSCRIPT
+chmod +x $KRAKENCLEARPM2SCRIPT
+
+cd $GUNBOTROOT
